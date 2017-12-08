@@ -3,7 +3,8 @@ LABEL maintainer "tboby"
 RUN groupadd --gid 1000 node \
   && useradd --uid 1000 --gid node --shell /bin/bash --create-home node
   
-RUN apt-get install -y xz-utils
+RUN apt-get update && \
+  apt-get install -y xz-utils
 
 # gpg keys listed at https://github.com/nodejs/node#release-team
 RUN set -ex \
