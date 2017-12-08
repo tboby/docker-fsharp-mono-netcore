@@ -1,31 +1,23 @@
-FROM microsoft/dotnet:2.0.3-sdk-jessie
-LABEL maintainer "Dave Curylo <dave@curylo.org>"
-ENV MONO_THREADS_PER_CPU 50
-RUN MONO_VERSION=5.4.1.6 && \
-    FSHARP_VERSION=4.1.29 && \
-    FSHARP_PREFIX=/usr && \
-    FSHARP_GACDIR=/usr/lib/mono/gac && \
-    FSHARP_BASENAME=fsharp-$FSHARP_VERSION && \
-    FSHARP_ARCHIVE=$FSHARP_VERSION.tar.gz && \
-    FSHARP_ARCHIVE_URL=https://github.com/fsharp/fsharp/archive/$FSHARP_VERSION.tar.gz && \
-    apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF && \
-    echo "deb http://download.mono-project.com/repo/debian jessie/snapshots/$MONO_VERSION main" > /etc/apt/sources.list.d/mono-official.list && \
-    apt-get update -y && \
-    apt-get --no-install-recommends install -y autoconf libtool pkg-config make automake nuget mono-devel msbuild ca-certificates-mono && \
-    rm -rf /var/lib/apt/lists/* && \
-    mkdir -p /tmp/src && \
-    cd /tmp/src && \
-    printf "namespace a { class b { public static void Main(string[] args) { new System.Net.WebClient().DownloadFile(\"%s\", \"%s\");}}}" $FSHARP_ARCHIVE_URL $FSHARP_ARCHIVE > download-fsharp.cs && \
-    mcs download-fsharp.cs && mono download-fsharp.exe && rm download-fsharp.exe download-fsharp.cs && \
-    tar xf $FSHARP_ARCHIVE && \
-    cd $FSHARP_BASENAME && \
-    ./autogen.sh --prefix=$FSHARP_PREFIX --with-gacdir=$FSHARP_GACDIR && \
-    make && \
-    make install && \
-    cd ~ && \
-    rm -rf /tmp/src /tmp/NuGetScratch ~/.nuget ~/.config ~/.local && \
-    apt-get purge -y autoconf libtool make automake && \
-    apt-get clean
+FROM dcurylo/fsharp-mono-netcore
+LABEL maintainer "tboby"
+RUN wget https://github.com/fsprojects/Paket/releases/download/5.125.3/paket.exe \
+      && chmod a+r paket.exe && mv paket.exe /usr/local/lib/ \
+      && printf '#!/bin/sh\nexec /usr/bin/mono /usr/local/lib/paket.exe "$@"' >> /usr/local/bin/paket \
+      && chmod u+x /usr/local/bin/paket && \
+      curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.6/install.sh | bash && \
+      export NVM_DIR="$HOME/.nvm" && \
+      '[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"' && \
+      nvm install node && \
+      npm install -g npm && \
+      npm install electron-packager --global && \
+      apt-get install apt-transport-https && \
+      wget -nc https://dl.winehq.org/wine-builds/Release.key && \
+      sudo apt-key add Release.key && \
+      echo "deb https://dl.winehq.org/wine-builds/debian/ jessie main" | tee /etc/apt/sources.list.d/docker.list && \
+      apt-get install -y software-properties-common python-software-properties && \
+      dpkg --add-architecture i386 && \
+      apt-get update && \
+      apt-get install -y awscli && \
+      apt-get install --install-recommends winehq-stable -y && \
 WORKDIR /root
-ENV FrameworkPathOverride /usr/lib/mono/4.5/
 CMD ["fsharpi"]
