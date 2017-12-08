@@ -71,7 +71,7 @@ RUN wget https://github.com/fsprojects/Paket/releases/download/5.125.3/paket.exe
       npm install electron-packager --global && \
       apt-get install apt-transport-https && \
       wget -nc https://dl.winehq.org/wine-builds/Release.key && \
-      sudo apt-key add Release.key && \
+      apt-key add Release.key && \
       echo "deb https://dl.winehq.org/wine-builds/debian/ jessie main" | tee /etc/apt/sources.list.d/docker.list && \
       apt-get install -y software-properties-common python-software-properties && \
       dpkg --add-architecture i386 && \
