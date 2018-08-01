@@ -73,7 +73,7 @@ RUN wget https://github.com/fsprojects/Paket/releases/download/5.125.3/paket.exe
       wget -nc https://dl.winehq.org/wine-builds/Release.key && \
       apt-key add Release.key && \
       echo "deb https://dl.winehq.org/wine-builds/debian/ jessie main" | tee /etc/apt/sources.list.d/docker.list && \
-      apt-get install -y software-properties-common python-software-properties && \
+      apt-get install -y software-properties-common && \
       dpkg --add-architecture i386 && \
       apt-get update && \
       apt-get install -y awscli && \
