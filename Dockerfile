@@ -77,6 +77,6 @@ RUN wget https://github.com/fsprojects/Paket/releases/download/5.125.3/paket.exe
       dpkg --add-architecture i386 && \
       apt-get update && \
       apt-get install -y awscli && \
-      apt-get install --install-recommends winehq-stable -y
+      apt-get install --install-recommends wine-stable winehq-stable -y
 WORKDIR /root
 CMD ["fsharpi"]
